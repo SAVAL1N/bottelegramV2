@@ -1,0 +1,162 @@
+@startuml
+package Telegram {
+    class TelegramBot {
+        - Mediator mediator
+        - String botToken
+        - String botUsername
+        - DatabaseManager databaseManager
+        + void onUpdateReceived(Update)
+        + String getBotToken()
+        + String getBotUsername()
+        - void setBotCommands()
+        + {static} void main(String[])
+    }
+    class Mediator {
+        - Map<String,UserState> userStateMap
+        - Map<String,Command> commandMap
+        ~ TelegramBot bot
+        - DatabaseManager databaseManager
+        - Map<String,UserData> userDataMap
+        - Set<MessageListener> messageListeners
+        + void addMessageListener(MessageListener)
+        + void removeMessageListener(MessageListener)
+        + void processIncomingMessage(Message)
+        + TelegramBot getBot()
+        - void initCommands()
+        + void processUpdate(Update)
+        - void processInput(Message,String,String,UserState)
+        + Map<String,Command> getCommandMap()
+        + void showMenu(String)
+        - void calculateAndSendResult(String)
+        + void sendMessage(SendMessage)
+        + void setUserState(String,UserState)
+    }
+    class UserData {
+        - double truePositive
+        - double falsePositive
+        - double falseNegative
+        - double trueNegative
+        + double getTruePositive()
+        + void setTruePositive(double)
+        + double getFalsePositive()
+        + void setFalsePositive(double)
+        + double getFalseNegative()
+        + void setFalseNegative(double)
+        + double getTrueNegative()
+        + void setTrueNegative(double)
+        + String getTableAsString()
+    }
+}
+
+package Upload {
+    class UserInputListener {
+        - Mediator mediator
+        - StatCalculator statCalculator
+        - String chatId
+        + void onMessage(Message)
+    }
+
+    class UploadCommand {
+        - Mediator mediator
+        - DatabaseManager databaseManager
+        + void execute(Message)
+    }
+
+    class IndexInputListener {
+        - Mediator mediator
+        - DatabaseManager databaseManager
+        - String chatId
+        + void onMessage(Message)
+    }
+
+    interface MessageListener {
+        ~ void onMessage(Message)
+    }
+}
+
+package Check {
+    class Calculator {
+        + {static} SensitivitySpecificity calculate(double,double,double,double)
+    }
+
+    class Calculator$SensitivitySpecificity {
+        - double sensitivity
+        - double specificity
+        + double getSensitivity()
+        + double getSpecificity()
+    }
+
+    class CheckCommand {
+        - Mediator mediator
+        + void execute(Message)
+    }
+}
+
+package DataBase {
+    class DatabaseManager {
+        - {static} String DB_URL
+        - {static} String DB_USER
+        - {static} String DB_PASSWORD
+        + Connection getConnection()
+        + boolean testConnection()
+        + void truncateTable(String)
+        + void importExcelData(InputStream)
+        + int[] calculateAndPrintResults(int)
+        - void createTableIfNotExists(Connection)
+    }
+
+    class ExcelData {
+        - double first
+        - double second
+        + double getSecond()
+        + void setSecond(double)
+        + double getFirst()
+        + void setFirst(double)
+        + String toString()
+    }
+}
+
+
+package Upload {
+    class StatCalculator {
+        - double tp
+        - double fp
+        - double fn
+        - double tn
+        - double p
+        - double n
+        + String getSensitivityAndSpecificity()
+        + String calculateAllStats()
+        + double getPrevalence()
+        + double getPositivePredictiveValue()
+        + double getFalseOmissionRate()
+        + double getAccuracy()
+        + double getFalseDiscoveryRate()
+        + double getNegativePredictiveValue()
+        + double getBalancedAccuracy()
+        + double getFowlkesMallowsIndex()
+        + double getF1Score()
+        + double getInformedness()
+        + double getPrevalenceThreshold()
+        + double getTruePositiveRate()
+        + double getFalseNegativeRate()
+        + double getFalsePositiveRate()
+        + double getTrueNegativeRate()
+        + double getPositiveLikelihoodRatio()
+        + double getNegativeLikelihoodRatio()
+        + double getMarkedness()
+        + double getDiagnosticOddsRatio()
+        + double getMatthewsCorrelationCoefficient()
+        + double getThreatScore()
+        + String calculateStats(String)
+    }
+}
+
+
+org.telegram.telegrambots.bots.TelegramLongPollingBot <|-- Telegram.TelegramBot
+
+Upload.MessageListener <|.. Upload.UserInputListener
+
+Upload.MessageListener <|.. Upload.IndexInputListener
+Check.Calculator +.. Check.Calculator$SensitivitySpecificity
+@enduml

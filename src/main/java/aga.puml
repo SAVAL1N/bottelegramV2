@@ -1,0 +1,6 @@
+@startuml
+package "Check" {
+  class "Calculator"
+  class "SensitivitySpecificity"
+}
+@enduml

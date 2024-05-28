@@ -1,0 +1,177 @@
+@startuml
+class Telegram.TelegramBot {
+- Mediator mediator
+- String botToken
+- String botUsername
+- DatabaseManager databaseManager
++ void onUpdateReceived(Update)
++ String getBotToken()
++ String getBotUsername()
+- void setBotCommands()
++ {static} void main(String[])
+}
+
+
+enum Telegram.UserState {
++  WAITING_FOR_TRUE_POSITIVE
++  WAITING_FOR_FALSE_POSITIVE
++  WAITING_FOR_FALSE_NEGATIVE
++  WAITING_FOR_TRUE_NEGATIVE
++  WAITING_FOR_PREVALENCE
+}
+
+class Upload.UserInputListener {
+- Mediator mediator
+- StatCalculator statCalculator
+- String chatId
++ void onMessage(Message)
+}
+
+
+interface Telegram.Command {
+~ void execute(Message)
+}
+
+class DataBase.DatabaseManager {
+- {static} String DB_URL
+- {static} String DB_USER
+- {static} String DB_PASSWORD
++ Connection getConnection()
++ boolean testConnection()
++ void truncateTable(String)
++ void importExcelData(InputStream)
++ int[] calculateAndPrintResults(int)
+- void createTableIfNotExists(Connection)
+}
+
+
+class Upload.UploadCommand {
+- Mediator mediator
+- DatabaseManager databaseManager
++ void execute(Message)
+}
+
+
+interface Upload.MessageListener {
+~ void onMessage(Message)
+}
+
+class Telegram.Mediator {
+- Map<String,UserState> userStateMap
+- Map<String,Command> commandMap
+~ TelegramBot bot
+- DatabaseManager databaseManager
+- Map<String,UserData> userDataMap
+- Set<MessageListener> messageListeners
++ void addMessageListener(MessageListener)
++ void removeMessageListener(MessageListener)
++ void processIncomingMessage(Message)
++ TelegramBot getBot()
+- void initCommands()
++ void processUpdate(Update)
+- void processInput(Message,String,String,UserState)
++ Map<String,Command> getCommandMap()
++ void showMenu(String)
+- void calculateAndSendResult(String)
++ void sendMessage(SendMessage)
++ void setUserState(String,UserState)
+}
+
+
+class Check.Calculator {
++ {static} SensitivitySpecificity calculate(double,double,double,double)
+}
+
+class Check.Calculator$SensitivitySpecificity {
+- double sensitivity
+- double specificity
++ double getSensitivity()
++ double getSpecificity()
+}
+
+
+class DataBase.ExcelData {
+- double first
+- double second
++ double getSecond()
++ void setSecond(double)
++ double getFirst()
++ void setFirst(double)
++ String toString()
+}
+
+
+class Upload.IndexInputListener {
+- Mediator mediator
+- DatabaseManager databaseManager
+- String chatId
++ void onMessage(Message)
+}
+
+
+class Check.CheckCommand {
+- Mediator mediator
++ void execute(Message)
+}
+
+
+class Upload.StatCalculator {
+- double tp
+- double fp
+- double fn
+- double tn
+- double p
+- double n
++ String getSensitivityAndSpecificity()
++ String calculateAllStats()
++ double getPrevalence()
++ double getPositivePredictiveValue()
++ double getFalseOmissionRate()
++ double getAccuracy()
++ double getFalseDiscoveryRate()
++ double getNegativePredictiveValue()
++ double getBalancedAccuracy()
++ double getFowlkesMallowsIndex()
++ double getF1Score()
++ double getInformedness()
++ double getPrevalenceThreshold()
++ double getTruePositiveRate()
++ double getFalseNegativeRate()
++ double getFalsePositiveRate()
++ double getTrueNegativeRate()
++ double getPositiveLikelihoodRatio()
++ double getNegativeLikelihoodRatio()
++ double getMarkedness()
++ double getDiagnosticOddsRatio()
++ double getMatthewsCorrelationCoefficient()
++ double getThreatScore()
++ String calculateStats(String)
+}
+
+
+class Telegram.UserData {
+- double truePositive
+- double falsePositive
+- double falseNegative
+- double trueNegative
++ double getTruePositive()
++ void setTruePositive(double)
++ double getFalsePositive()
++ void setFalsePositive(double)
++ double getFalseNegative()
++ void setFalseNegative(double)
++ double getTrueNegative()
++ void setTrueNegative(double)
++ String getTableAsString()
+}
+
+
+
+
+org.telegram.telegrambots.bots.TelegramLongPollingBot <|-- Telegram.TelegramBot
+Upload.MessageListener <|.. Upload.UserInputListener
+Telegram.Command <|.. Upload.UploadCommand
+Check.Calculator +.. Check.Calculator$SensitivitySpecificity
+Upload.MessageListener <|.. Upload.IndexInputListener
+Telegram.Command <|.. Check.CheckCommand
+@enduml
