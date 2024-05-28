@@ -17,7 +17,7 @@ public class CheckCommand implements Command {
     public void execute(Message message) {
         String chatId = message.getChatId().toString();
 
-        SendMessage MessageTable = new SendMessage(chatId, ("Enter the data in the following format\n" + "------------------------------\n" +
+        SendMessage MessageTable = new SendMessage(chatId, ("Введите данные в следующем формате\n" + "------------------------------\n" +
                 "|\t\t\tTP\t=\t?"+ "\t\t|\t\t\tFP\t=\t?" +"\t\t\t|" +
                 "\n------------------------------\n" +
                 "|\t\t\tFN\t=\t?"+ "\t|\t\t\tTN\t=\t?" + "\t\t\t|" +
@@ -27,7 +27,7 @@ public class CheckCommand implements Command {
         mediator.sendMessage(MessageTable);
 
         mediator.setUserState(chatId, UserState.WAITING_FOR_TRUE_POSITIVE);
-        mediator.sendMessage(new SendMessage(chatId, "Enter True positive (TP):"));
+        mediator.sendMessage(new SendMessage(chatId, "Введите количество истинно положительных результатов (TP):"));
 
     }
 }

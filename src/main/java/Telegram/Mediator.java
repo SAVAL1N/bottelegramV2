@@ -1,5 +1,7 @@
 package Telegram;
 
+import Calc.CalculationType;
+import Calc.StatCalculator;
 import Excel.ExcelDataCall;
 import Excel.ExcelDataInput;
 import Json.JsonDataInput;
@@ -77,7 +79,7 @@ public class Mediator {
                 if (userState != null) {
                     processInput(message, chatId, text, userState);
                 } else {
-                    SendMessage errorMessage = new SendMessage(chatId, "Please enter a command or upload a file.");
+                    SendMessage errorMessage = new SendMessage(chatId, "Пожалуйста, введите команду или загрузите файл.");
                     sendMessage(errorMessage);
                 }
             }
@@ -100,7 +102,7 @@ public class Mediator {
         try {
             value = Double.parseDouble(inputText);
         } catch (NumberFormatException e) {
-            String errorText = "Invalid input. Enter number.";
+            String errorText = "Неверный ввод. Введите номер.";
             sendMessage(new SendMessage(chatId, errorText));
             return;
         }
@@ -108,7 +110,7 @@ public class Mediator {
         UserData userData;
 
         if (!userDataMap.containsKey(chatId)) {
-            userData = new UserData(value, 0, 0, 0, 0);
+            userData = new UserData(value, 0, 0, 0);
             userDataMap.put(chatId, userData);
         } else {
             userData = userDataMap.get(chatId);
@@ -118,34 +120,30 @@ public class Mediator {
             case WAITING_FOR_TRUE_POSITIVE:
                 userData.setTruePositive(value);
                 userStateMap.put(chatId, UserState.WAITING_FOR_FALSE_POSITIVE);
-                String table = userData.getTableAsString();
-                sendMessage(new SendMessage(chatId, table));
-                sendMessage(new SendMessage(chatId, "Enter  False positive (FP):"));
+                sendMessage(new SendMessage(chatId, userData.getTableAsString()));
+                sendMessage(new SendMessage(chatId, "Введите количество ложно положительных результатов (FP):"));
                 break;
             case WAITING_FOR_FALSE_POSITIVE:
                 userData.setFalsePositive(value);
                 userStateMap.put(chatId, UserState.WAITING_FOR_FALSE_NEGATIVE);
-                table = userData.getTableAsString();
-                sendMessage(new SendMessage(chatId, table));
-                sendMessage(new SendMessage(chatId, "Enter  False negative (FN):"));
+                sendMessage(new SendMessage(chatId, userData.getTableAsString()));
+                sendMessage(new SendMessage(chatId, "Введите количество ложно отрицательных результатов (FN):"));
                 break;
             case WAITING_FOR_FALSE_NEGATIVE:
                 userData.setFalseNegative(value);
                 userStateMap.put(chatId, UserState.WAITING_FOR_TRUE_NEGATIVE);
-                table = userData.getTableAsString();
-                sendMessage(new SendMessage(chatId, table));
-                sendMessage(new SendMessage(chatId, "Enter  True negative (TN):"));
+                sendMessage(new SendMessage(chatId, userData.getTableAsString()));
+                sendMessage(new SendMessage(chatId, "Введите количество истинно отрицательных результатов (TN):"));
                 break;
             case WAITING_FOR_TRUE_NEGATIVE:
                 userData.setTrueNegative(value);
-                table = userData.getTableAsString();
-                sendMessage(new SendMessage(chatId, table));
+                sendMessage(new SendMessage(chatId, userData.getTableAsString()));
                 userStateMap.put(chatId, UserState.WAITING_FOR_METRIC_INPUT);
+                sendMessage(new SendMessage(chatId, generateMetricsMessage(chatId)));
+                break;
             case WAITING_FOR_METRIC_INPUT:
-
-                String metricsMessage = generateMetricsMessage(chatId);
-                SendMessage askFor = new SendMessage(chatId, metricsMessage);
-                this.sendMessage(askFor);
+                String[] metricIds = inputText.split("\\s+");
+                StringBuilder resultBuilder = new StringBuilder();
 
                 double TP = userData.getTruePositive();
                 double FP = userData.getFalsePositive();
@@ -155,9 +153,20 @@ public class Mediator {
                 double n = FP + TN;
 
                 StatCalculator statCalculator = new StatCalculator(TP, FP, FN, TN, p, n);
-                UserInputListener userInputListener = new UserInputListener(this, statCalculator, chatId);
-                this.addMessageListener(userInputListener);
-            break;
+
+                for (String metricId : metricIds) {
+                    if (metricId.equals("24")) {
+                        resultBuilder.append(statCalculator.calculateAllStats()).append("\n");
+                        break;
+                    } else {
+                        resultBuilder.append(statCalculator.calculateStats(metricId)).append("\n");
+                    }
+                }
+
+                sendMessage(new SendMessage(chatId, resultBuilder.toString()));
+                userStateMap.put(chatId, UserState.WAITING_FOR_INDEX);
+                userDataMap.remove(chatId);
+                break;
         }
     }
 
@@ -174,11 +183,11 @@ public class Mediator {
     }
 
     public String generateMetricsMessage(String chatId) {
-        StringBuilder messageBuilder = new StringBuilder("Indicate what calculations we need (can be separated by a space):\n");
-        for (StatDefinitions.CalculationType type : StatDefinitions.CalculationType.values()) {
+        StringBuilder messageBuilder = new StringBuilder("Указываем какие расчеты нам нужны (можно через пробел):\n");
+        for (CalculationType type : CalculationType.values()) {
             messageBuilder.append(type.getId()).append(" - ").append(type.getName()).append("\n");
         }
-        messageBuilder.append("23 - Print All\n");
+        messageBuilder.append("24 - Вывести все\n");
         return messageBuilder.toString();
     }
 
@@ -193,7 +202,7 @@ public class Mediator {
         keyboard.add(row);
         replyKeyboardMarkup.setKeyboard(keyboard);
 
-        SendMessage sendMessage = new SendMessage(chatId, "Select a command:");
+        SendMessage sendMessage = new SendMessage(chatId, "Выберите команду:");
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
 
         sendMessage(sendMessage);

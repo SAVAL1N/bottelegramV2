@@ -22,7 +22,7 @@ public class ExcelDataInput {
             if (rowIterator.hasNext()) {
                 rowIterator.next();
             } else {
-                System.out.println("No rows found in the Excel file.");
+                System.out.println("В файле Excel не найдено данных.");
                 return excelDataList;
             }
 
@@ -39,9 +39,9 @@ public class ExcelDataInput {
             }
 
             System.out.println(excelDataList);
-            System.out.println("Data from Excel successfully imported.");
+            System.out.println("Данные из Excel успешно импортированы.");
         } catch (IOException e) {
-            System.out.println("Error processing Excel file: " + e.getMessage());
+            System.out.println("Ошибка обработки файла Excel: " + e.getMessage());
         }
         return excelDataList;
     }

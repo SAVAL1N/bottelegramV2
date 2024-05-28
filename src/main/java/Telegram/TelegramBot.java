@@ -38,9 +38,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                 if (messageText.equals("/start")) {
                     SendMessage welcomeMessage = new SendMessage();
                     welcomeMessage.setChatId(chatId);
-                    welcomeMessage.setText("Hello! I am a bot for calculating sensitivity and specificity. Please select one of the commands on the panel\n" +
-                            "/check - calculator based on your values \n" +
-                            "/upload - upload an Excel or JSON file with data");
+                    welcomeMessage.setText("Привет! Я бот для расчета чувствительности и специфичности. Пожалуйста, выберите одну из команд на панели\n" +
+                            "/check — калькулятор на основе ваших значений \n" +
+                            "/upload — загрузить файл Excel или JSON с данными");
 
                     mediator.showMenu(String.valueOf(chatId));
 
@@ -79,9 +79,9 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void setBotCommands() {
         List<BotCommand> commands = new ArrayList<>();
-        commands.add(new BotCommand("/start", "Start bot"));
-        commands.add(new BotCommand("/check", "Sensitivity and Specificity Calculator"));
-        commands.add(new BotCommand("/upload", "Upload Excel or JSON file with data"));
+        commands.add(new BotCommand("/start", "Начать общение с ботом"));
+        commands.add(new BotCommand("/check", "Калькулятор чувствительности и специфичности"));
+        commands.add(new BotCommand("/upload", "Загрузите файл Excel или JSON с данными."));
         SetMyCommands setMyCommands = new SetMyCommands();
         setMyCommands.setCommands(commands);
 
@@ -93,7 +93,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     public static void main(String[] args) {
-        String botToken = "";
+        String botToken = "6770382666:AAG9oVfSSnIBbu0pi9I04Rkmm2ZeKMnzjZ8";
         String botUsername = "SensiAndSpeBot_bot";
 
         ExcelDataInput excelDataInput = new ExcelDataInput();

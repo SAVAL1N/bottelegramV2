@@ -7,7 +7,6 @@ public class ExcelDataCall {
     public int[] calculateAndPrintResults(List<ExcelData> excelDataList, int index) {
         int[] results = null;
 
-        // Проводим вычисления
         if (excelDataList != null && !excelDataList.isEmpty()) {
             int bolen = 0;
             int nebolen = 0;
@@ -50,7 +49,7 @@ public class ExcelDataCall {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("No data found in Excel.");
+            System.out.println("В Еxcel файле не найдено данных.");
         }
 
         return results;

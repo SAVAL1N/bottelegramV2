@@ -1,5 +1,6 @@
 package Upload;
 
+import Calc.StatCalculator;
 import Telegram.Mediator;
 import Telegram.UserState;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -25,9 +26,9 @@ public class UserInputListener implements MessageListener {
 
             for (String metricId : metricIds) {
                 String result;
-                if (metricId.equals("23")) {
+                if (metricId.equals("24")) {
                     result = statCalculator.calculateAllStats();
-                    resultBuilder.append(result).append("\n");
+                    resultBuilder.append(result).append("");
                     break;
                 } else {
                     result = statCalculator.calculateStats(metricId);
@@ -38,7 +39,6 @@ public class UserInputListener implements MessageListener {
             SendMessage sendMessage = new SendMessage(chatId, resultBuilder.toString());
             mediator.sendMessage(sendMessage);
 
-            // Меняем состояние на ожидание ввода новых данных
             mediator.setUserState(chatId, UserState.WAITING_FOR_INDEX);
 
             mediator.removeMessageListener(this);

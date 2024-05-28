@@ -25,9 +25,4 @@ public class ExcelData {
 
     private double first;
     private double second;
-
-    @Override
-    public String toString() {
-        return "ExcelData{first='" + first + "', second='" + second + "'}";
-    }
 }

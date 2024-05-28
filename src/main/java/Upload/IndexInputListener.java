@@ -1,5 +1,6 @@
 package Upload;
 
+import Calc.StatCalculator;
 import Excel.ExcelData;
 import Excel.ExcelDataCall;
 import Telegram.Mediator;
@@ -58,12 +59,12 @@ public class IndexInputListener implements MessageListener {
                     mediator.addMessageListener(userInputListener);
 
                 } catch (NumberFormatException e) {
-                    SendMessage errorMessage = new SendMessage(chatId, "Invalid index format. Please enter an integer.");
+                    SendMessage errorMessage = new SendMessage(chatId, "Неверный формат индекса. Пожалуйста, введите целое число.");
                     mediator.sendMessage(errorMessage);
                 }
                 mediator.removeMessageListener(this);
             } else {
-                SendMessage errorMessage = new SendMessage(chatId, "Invalid input format. Please enter an integer.");
+                SendMessage errorMessage = new SendMessage(chatId, "Неверный формат ввода. Пожалуйста, введите целое число.");
                 mediator.sendMessage(errorMessage);
             }
         }

@@ -22,9 +22,9 @@ public class JsonDataInput {
                 jsonDataList.add(new ExcelData(String.valueOf(first), String.valueOf(second)));
             }
             System.out.println(jsonDataList);
-            System.out.println("Data from JSON successfully imported.");
+            System.out.println("Данные из JSON успешно импортированы.");
         } catch (IOException e) {
-            System.out.println("Error processing JSON file: " + e.getMessage());
+            System.out.println("Ошибка обработки файла JSON: " + e.getMessage());
         }
         return jsonDataList;
     }

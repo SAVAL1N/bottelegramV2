@@ -1,7 +1,7 @@
 package Upload;
 
 import Excel.ExcelData;
-import Json.JsonDataInput; // Ensure this import is correct
+import Json.JsonDataInput;
 import Excel.ExcelDataInput;
 import Excel.ExcelDataCall;
 import Telegram.Command;
@@ -50,16 +50,16 @@ public class UploadCommand implements Command {
                 } else if (fileName.endsWith(".json")) {
                     dataList = jsonDataInput.importJsonData(inputStream);
                 } else {
-                    SendMessage sendMessage = new SendMessage(chatId, "Please upload the file in Excel (.xlsx) or JSON (.json) format.");
+                    SendMessage sendMessage = new SendMessage(chatId, "Загрузите файл в формате Excel (.xlsx) или JSON (.json).");
                     mediator.sendMessage(sendMessage);
                     return;
                 }
 
-                SendMessage sendMessage = new SendMessage(chatId, "Data loaded successfully.");
+                SendMessage sendMessage = new SendMessage(chatId, "Данные успешно загружены.");
                 mediator.sendMessage(sendMessage);
 
                 SendMessage askIndexMessage = new SendMessage(chatId, "\n" +
-                        "Enter index value:");
+                        "Введите значение индекса:");
                 mediator.sendMessage(askIndexMessage);
 
                 IndexInputListener indexInputListener = new IndexInputListener(mediator, dataList, chatId, excelDataCall);
@@ -69,7 +69,7 @@ public class UploadCommand implements Command {
                 e.printStackTrace();
             }
         } else {
-            SendMessage sendMessage = new SendMessage(chatId, "Please upload an Excel file or a JSON file.");
+            SendMessage sendMessage = new SendMessage(chatId, "Загрузите файл Excel или файл JSON.");
             mediator.sendMessage(sendMessage);
         }
     }
