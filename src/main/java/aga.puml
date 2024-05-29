@@ -1,6 +1,76 @@
 @startuml
-package "Check" {
-  class "Calculator"
-  class "SensitivitySpecificity"
-}
+
+    class StatCalculator {
+        -double tp
+        -double fp
+        -double fn
+        -double tn
+        -double p
+        -double n
+        +StatCalculator(double tp, double fp, double fn, double tn, double p, double n)
+        +String calculateStat(CalculationType type)
+        +String calculateStats(String userInput)
+        +String calculateAllStats()
+    }
+
+    class CalculationType {
+        <<enumeration>>
+        SENSITIVITY_AND_SPECIFICITY
+        PREVALENCE
+        PPV
+        FOR
+        ACCURACY
+        FDR
+        NPV
+        BALANCED_ACCURACY
+        FOWLKES_MALLOWS_INDEX
+        F1_SCORE
+        INFORMEDNESS
+        PREVALENCE_THRESHOLD
+        TPR
+        FNR
+        FPR
+        TNR
+        LR_PLUS
+        LR_MINUS
+        MARKEDNESS
+        DOR
+        MCC
+        THREAT_SCORE
+        YOUDENS_J
+        +int id
+        +String name
+        +StatCalculation calculation
+        +int getId()
+        +String getName()
+        +StatCalculation getCalculation()
+        +double calculate(double tp, double fp, double fn, double tn)
+        +static CalculationType fromId(int id)
+    }
+
+    class UserData {
+        -double truePositive
+        -double falsePositive
+        -double falseNegative
+        -double trueNegative
+        +UserData(double truePositive, double falsePositive, double falseNegative, double trueNegative)
+        +double getTruePositive()
+        +void setTruePositive(double truePositive)
+        +double getFalsePositive()
+        +void setFalsePositive(double falsePositive)
+        +double getFalseNegative()
+        +void setFalseNegative(double falseNegative)
+        +double getTrueNegative()
+        +void setTrueNegative(double trueNegative)
+        +String getTableAsString()
+    }
+
+    class StatCalculation {
+        <<interface>>
+        +double calculate(double tp, double fp, double fn, double tn)
+    }
+
+    StatCalculator --> CalculationType
+    CalculationType --> StatCalculation
+
 @enduml

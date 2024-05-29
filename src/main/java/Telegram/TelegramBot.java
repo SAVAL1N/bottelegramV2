@@ -93,7 +93,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     public static void main(String[] args) {
-        String botToken = "6770382666:AAG9oVfSSnIBbu0pi9I04Rkmm2ZeKMnzjZ8";
+        String botToken = "6770382666:AAGn7rjxc1InIXcTmFKUGbxGuC3V2g4P91Y";
         String botUsername = "SensiAndSpeBot_bot";
 
         ExcelDataInput excelDataInput = new ExcelDataInput();

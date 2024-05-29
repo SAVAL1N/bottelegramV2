@@ -1,12 +1,14 @@
 package Upload;
 
 import Excel.ExcelData;
+import Excel.ExcelDataCall;
+import FileReader.FileReaderFactory;
+import FileReader.ExcelFileReaderFactory;
+import FileReader.JsonFileReaderFactory;
 import Json.JsonDataInput;
 import Excel.ExcelDataInput;
-import Excel.ExcelDataCall;
 import Telegram.Command;
 import Telegram.Mediator;
-import Telegram.UserState;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Document;
@@ -22,14 +24,14 @@ import java.util.List;
 public class UploadCommand implements Command {
     private final Mediator mediator;
     private final ExcelDataInput excelDataInput;
-    private final JsonDataInput jsonDataInput; // Ensure this is correct
+    private final JsonDataInput jsonDataInput;
     private List<ExcelData> dataList;
     private final ExcelDataCall excelDataCall;
 
-    public UploadCommand(Mediator mediator, ExcelDataInput excelDataInput, JsonDataInput jsonDataInput, ExcelDataCall excelDataCall) { // Ensure this is correct
+    public UploadCommand(Mediator mediator, ExcelDataInput excelDataInput, JsonDataInput jsonDataInput, ExcelDataCall excelDataCall) {
         this.mediator = mediator;
         this.excelDataInput = excelDataInput;
-        this.jsonDataInput = jsonDataInput; // Ensure this is correct
+        this.jsonDataInput = jsonDataInput;
         this.excelDataCall = excelDataCall;
     }
 
@@ -45,21 +47,24 @@ public class UploadCommand implements Command {
                 InputStream inputStream = url.openStream();
 
                 String fileName = document.getFileName();
+                FileReaderFactory fileReaderFactory;
+
                 if (fileName.endsWith(".xlsx")) {
-                    dataList = excelDataInput.importExcelData(inputStream);
+                    fileReaderFactory = new ExcelFileReaderFactory(excelDataInput);
                 } else if (fileName.endsWith(".json")) {
-                    dataList = jsonDataInput.importJsonData(inputStream);
+                    fileReaderFactory = new JsonFileReaderFactory(jsonDataInput);
                 } else {
                     SendMessage sendMessage = new SendMessage(chatId, "Загрузите файл в формате Excel (.xlsx) или JSON (.json).");
                     mediator.sendMessage(sendMessage);
                     return;
                 }
 
+                dataList = fileReaderFactory.importData(inputStream);
+
                 SendMessage sendMessage = new SendMessage(chatId, "Данные успешно загружены.");
                 mediator.sendMessage(sendMessage);
 
-                SendMessage askIndexMessage = new SendMessage(chatId, "\n" +
-                        "Введите значение индекса:");
+                SendMessage askIndexMessage = new SendMessage(chatId, "Введите значение индекса:");
                 mediator.sendMessage(askIndexMessage);
 
                 IndexInputListener indexInputListener = new IndexInputListener(mediator, dataList, chatId, excelDataCall);
